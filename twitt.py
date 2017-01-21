@@ -10,6 +10,7 @@ def process(tweet):
     processed_tweet = remove_urls(processed_tweet)
     processed_tweet = chomp_usernames(processed_tweet)
     processed_tweet = remove_hashtags(processed_tweet)
+    processed_tweet = split_sentences(processed_tweet)
     return processed_tweet
     
 def encode_ascii(tweet):
@@ -44,6 +45,18 @@ def remove_hashtags(tweet):
         processed_tweet = processed_tweet.replace(hashtag, hashtag[1:])
         
     return processed_tweet
+    
+def split_sentences(tweet):
+    possible_sentence_boundaries = find_possible_sentence_boundaries(tweet)
+    return tweet
+        
+def find_possible_sentence_boundaries(tweet):
+    possible_sentence_boundaries = []
+    tweet_characters = list(tweet)
+    for i in range(0, len(tweet_characters)):
+        if (tweet_characters[i] in set([".", "?", "!"])):
+            possible_sentence_boundaries.append(i)
+    return possible_sentence_boundaries
 
 if __name__ == "__main__":
     with open(sys.argv[1], 'rb') as twitter_csv:
