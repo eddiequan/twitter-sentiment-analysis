@@ -9,6 +9,7 @@ def process(tweet):
     processed_tweet = replace_html_character_codes(processed_tweet)
     processed_tweet = remove_urls(processed_tweet)
     processed_tweet = chomp_usernames(processed_tweet)
+    processed_tweet = remove_hashtags(processed_tweet)
     return processed_tweet
     
 def encode_ascii(tweet):
@@ -35,11 +36,18 @@ def chomp_usernames(tweet):
         chomped_tweet = chomped_tweet.replace("@" + username, username)
     return chomped_tweet
     
+def remove_hashtags(tweet):
+    hashtags = [word for word in tweet.split() if word[0] == "#"]
+    
+    processed_tweet = tweet
+    for hashtag in hashtags:
+        processed_tweet = processed_tweet.replace(hashtag, hashtag[1:])
+        
+    return processed_tweet
 
 if __name__ == "__main__":
     with open(sys.argv[1], 'rb') as twitter_csv:
         reader = csv.reader(twitter_csv)
         for row in reader:
             print(process(row[5]))
-    print "Done!"
     
