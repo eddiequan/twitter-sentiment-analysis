@@ -1,14 +1,19 @@
 import csv
 import sys
 import re
+import NLPlib
 from HTMLParser import HTMLParser
 
 PROPER_ABBREVIATIONS = ["Ala\.", "Ariz\.", "Assn\.", "Atty\.", "Aug\.", "Ave\.", "Bldg\.", "Blvd\.", "Calif\.", "Capt\.", "Cf\.", "Ch\.", "Co\.", "Col\.", "Colo\.", "Conn\.", "Corp\.", "DR\.", "Dec\.", "Dept\.", "Dist\.", "Dr\.", "Drs\.", "Ed\.", "Eq\.", "FEB\.", "Feb\.", "Fig\.", "Figs\.", "Fla\.", "Ga\.", "Gen\.", "Gov\.", "HON\.", "Ill\.", "Inc\.", "JR\.", "Jan\.", "Jr\.", "Kan\.", "Ky\.", "La\.", "Lt\.", "Ltd\.", "MR\.", "MRS\.", "Mar\.", "Mass\.", "Md\.", "Messrs\.", "Mich\.", "Minn\.", "Miss\.", "Mmes\.", "Mo\.", "Mr\.", "Mrs\.", "Mt\.", "NO\.", "No\.", "Nov\.", "Oct\.", "Okla\.", "Op\.", "Ore\.", "Pa\.", "Pp\.", "Prof\.", "Prop\.", "Rd\.", "Ref\.", "Rep\.", "Reps\.", "Rev\.", "Rte\.", "Sen\.", "Sept\.", "Sr\.", "St\.", "Stat\.", "Supt\.", "Tech\.", "Tex\.", "Va\.", "Vol\.", "Wash\."]
 
 INLINE_ABBREVIATIONS = ["al\.", "av\.", "ave\.", "ca\.", "cc\.", "chap\.", "cm\.", "cu\.", "dia\.", "dr\.", "eqn\.", "etc\.", "fig\.", "figs\.", "ft\.", "gm\.", "hr\.", "in\.", "kc\.", "lb\.", "lbs\.", "mg\.", "ml\.", "mm\.", "mv\.", "nw\.", "oz\.", "pl\.", "pp\.", "sec\.", "sq\.", "st\.", "vs\.", "yr\."]
 
+CLITICS = ["\'s", "\'re", "\'m", "\'ve", "\'d", "\'ll", "n\'t", "s\'"]
+
 PROP_ABBREV_REGEX = "(" + ")|(".join(PROPER_ABBREVIATIONS) + ")"
 INLINE_ABBREV_REGEX = "(" + ")|(".join(INLINE_ABBREVIATIONS) + ")"
+CLITICS_REGEX = "(" + "|".join(CLITICS) + ")"
+
 
 def process(tweet):
     processed_tweet = encode_ascii(tweet)
@@ -19,6 +24,7 @@ def process(tweet):
     processed_tweet = remove_hashtags(processed_tweet)
     processed_tweet = split_sentences(processed_tweet)
     processed_tweet = split_punctuation(processed_tweet)
+    processed_tweet = split_clitics(processed_tweet)
     return processed_tweet
     
 def encode_ascii(tweet):
@@ -115,10 +121,21 @@ def insert(original, new, pos):
 def diff(first, second):
     second = set(second)
     return [item for item in first if item not in second]
+
+def split_clitics(tweet):
+    return re.sub(CLITICS_REGEX, r' \1', tweet)
     
+def tag(tweet, tagger):
+    tokens = list(filter(lambda x: x != '', tweet.split(" ")))
+    tags = tagger.tag(tokens)
+    processed_tweet = ' '.join('%s/%s' % t for t in zip(tokens, tags))
+    return re.sub(r'([.?!])\n/([A-Z][A-Z])', r'\1/\2\n', processed_tweet)
+
 if __name__ == "__main__":
+    tagger = NLPlib.NLPlib()
+
     with open(sys.argv[1], 'rb') as twitter_csv:
         reader = csv.reader(twitter_csv)
         for row in reader:
-            print(process(row[5]))
+            print(tag(process(row[5]), tagger))
     
