@@ -133,9 +133,11 @@ def tag(tweet, tagger):
 
 if __name__ == "__main__":
     tagger = NLPlib.NLPlib()
+    f = open(sys.argv[3], 'w')
 
     with open(sys.argv[1], 'rb') as twitter_csv:
         reader = csv.reader(twitter_csv)
         for row in reader:
-            print(tag(process(row[5]), tagger))
+            f.write("<A=%s>\n" % row[0])
+            f.write(tag(process(row[5]), tagger))
     
