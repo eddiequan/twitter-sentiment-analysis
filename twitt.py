@@ -43,7 +43,7 @@ def remove_urls(tweet):
     return re.sub(URL_REGEX, "", tweet)
     
 def split_punctuation(tweet):
-    return re.sub(r"([\.!?]+)", r" \1", tweet)
+    return re.sub(r"([\.!?,]+)", r" \1", tweet)
 
 # TODO: change to use regex?    
 def chomp_usernames(tweet):
