@@ -127,9 +127,10 @@ def split_clitics(tweet):
     
 def tag(tweet, tagger):
     tokens = list(filter(lambda x: x != '', tweet.split(" ")))
-    tags = tagger.tag(tokens)
+    new_tokens = map(lambda x: re.sub(r'\n', '', x), tokens)
+    tags = tagger.tag(new_tokens)
     processed_tweet = ' '.join('%s/%s' % t for t in zip(tokens, tags))
-    return re.sub(r'([.?!])\n/([A-Z][A-Z])', r'\1/\2\n', processed_tweet)
+    return re.sub(r'([.?!])\n/(.)', r'\1/\2\n', processed_tweet)
 
 if __name__ == "__main__":
     tagger = NLPlib.NLPlib()
