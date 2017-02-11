@@ -145,7 +145,7 @@ def tag(tweet, tagger):
     new_tokens = map(lambda x: re.sub(r'\n', '', x), tokens)
     tags = tagger.tag(new_tokens)
     processed_tweet = ' '.join('%s/%s' % t for t in zip(tokens, tags))
-    return re.sub(r'([.?!])\n/(.)', r'\1/\2\n', processed_tweet)
+    return re.sub(r'([.?!])\n/(\.|\:|NN)', r'\1/\2\n', processed_tweet)
 
 if __name__ == "__main__":
     tagger = NLPlib.NLPlib()
@@ -154,6 +154,6 @@ if __name__ == "__main__":
     with open(sys.argv[1], 'rb') as twitter_csv:
         reader = csv.reader(twitter_csv)
         for row in reader:
-            f.write("<A=%s>\n" % row[0])
+            f.write("\n<A=%s>\n" % row[0])
             f.write(tag(process(row[5]), tagger))
     
