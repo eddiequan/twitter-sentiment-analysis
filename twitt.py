@@ -23,6 +23,7 @@ def process(tweet):
     processed_tweet = chomp_usernames(processed_tweet)
     processed_tweet = remove_hashtags(processed_tweet)
     processed_tweet = split_sentences(processed_tweet)
+    processed_tweet = split_period(processed_tweet)
     processed_tweet = split_punctuation(processed_tweet)
     processed_tweet = split_clitics(processed_tweet)
     return processed_tweet
@@ -45,7 +46,19 @@ def remove_urls(tweet):
 
 # need to fix, currently splitting abbrevs. 
 def split_punctuation(tweet):
-    return re.sub(r"([\.!?,]+)", r" \1", tweet)
+    return re.sub(r"([\)\(!?,\"]+)", r" \1", tweet)
+
+def split_period(tweet):
+    period_splits = re.findall(r'\w+\.', tweet)
+
+    processed_tweet = tweet
+    for period_split in period_splits:
+        if not (re.match(PROP_ABBREV_REGEX, period_split) or re.match(INLINE_ABBREV_REGEX, period_split)):
+            processed_tweet = processed_tweet.replace(period_split, " .".join(period_split.split(".")))
+
+    return processed_tweet
+
+
 
 # TODO: change to use regex?    
 def chomp_usernames(tweet):
@@ -87,21 +100,21 @@ def find_sentence_boundaries(tweet, possible_sentence_boundaries):
     real_sentence_boundaries = possible_sentence_boundaries
     discarded_sentence_boundaries = []
     for index, sentence_boundary in enumerate(possible_sentence_boundaries):
-       if (sentence_boundary >= len(tweet)-1):
+        if (sentence_boundary >= len(tweet)-1):
            continue
-       if (tweet[sentence_boundary+1] == "\""):
+        if (tweet[sentence_boundary+1] == "\""):
            real_sentence_boundaries[index] += 1
            continue
-       if (tweet[sentence_boundary] in set([".", "?", "!"]) and not is_boundary(sentence_boundary, tweet)):
-           discarded_sentence_boundaries.append(sentence_boundary)
-    return diff(possible_sentence_boundaries, discarded_sentence_boundaries)
+        if (tweet[sentence_boundary] in set([".", "?", "!"]) and not is_boundary(sentence_boundary, tweet)):
+            discarded_sentence_boundaries.append(sentence_boundary)
+    return diff(real_sentence_boundaries, discarded_sentence_boundaries)
 
 def is_boundary(sentence_boundary, tweet):
     if (sentence_boundary+1 < len(tweet) and tweet[sentence_boundary+1] in set([".", "?", "!"])):
         return False
     
     abbreviation = ""
-    for i in range(sentence_boundary, 0, -1):
+    for i in range(sentence_boundary, -1, -1):
       if tweet[i] == " ":
           break
       abbreviation = tweet[i] + abbreviation
