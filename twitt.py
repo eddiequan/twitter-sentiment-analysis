@@ -45,7 +45,8 @@ def remove_urls(tweet):
 
 # need to fix, currently splitting abbrevs. 
 def split_punctuation(tweet):
-    return re.sub(r"([\.!?,]+)", r" \1", tweet)
+    return re.sub(r"([\"'!?,]+)", r" \1", tweet)
+    #return re.sub(r"([\.!?,]+)", r" \1", tweet)
 
 # TODO: change to use regex?    
 def chomp_usernames(tweet):

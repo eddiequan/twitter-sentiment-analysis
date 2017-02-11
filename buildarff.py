@@ -52,16 +52,19 @@ def feat7(content):
 # Semicolons / Colons
 def feat8(content):
     print("feat8 finds")
-    print(re.findall(r':/:|;/;', content))
-    return len(re.findall(r':/:|;/;', content))
+    print(re.findall(r':/:|;/:', content))
+    return len(re.findall(r':/:|;/:', content))
     
 
 # Dashes
 def feat9(content):
     print("feat9 finds")
 
-    print(re.findall(r'-/-', content))
-    return len(re.findall(r'-/-', content))
+    print(re.findall(r'-/:', content))
+    return len(re.findall(r'-/:', content))
+
+
+
 
 if __name__ == "__main__":
     output_file = open(sys.argv[2], 'w')
