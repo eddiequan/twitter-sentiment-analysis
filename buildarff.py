@@ -17,9 +17,9 @@ def feat1(content):
 # Second person pronouns
 def feat2(content):
     # print("feat2 finds")
-    # print(re.findall(r'\b(you/|your/|yours/|u/|ur/|urs/)', content, re.IGNORECASE))
+    # print(re.findall(', content, re.IGNORECASE))
 
-    return len(re.findall(r'\b(me/|my/|mine/|we/|us/|our/|ours/)', content, re.IGNORECASE))
+    return len(re.findall(r'\b(you/|your/|yours/|u/|ur/|urs/)', content, re.IGNORECASE))
 
 # Third person pronouns
 def feat3(content):
