@@ -168,16 +168,10 @@ if __name__ == "__main__":
 
         for idx, content in enumerate(tagged_tweet_content):
             if not (num_data_points[polarity_tags[idx]] >= MAX_PER_CLASS):
-                output_file.write("\n===============CONTENT====================\n")
-                output_file.write(content)
-                output_file.write("\n================TAGS=====================\n")
                 output_file.write(format_features(content) + "," + polarity_tags[idx])
                 num_data_points[polarity_tags[idx]] += 1
     else:
         for idx, content in enumerate(tagged_tweet_content):
-            output_file.write("\n===============CONTENT====================\n")
-            output_file.write(content)
-            output_file.write("\n================TAGS=====================\n")
             output_file.write(format_features(content) + "," + polarity_tags[idx])
 
     output_file.close()
