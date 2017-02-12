@@ -25,6 +25,7 @@ def process(tweet):
     processed_tweet = split_sentences(processed_tweet)
     processed_tweet = split_period(processed_tweet)
     processed_tweet = split_punctuation(processed_tweet)
+    processed_tweet = split_parentheses(processed_tweet)
     processed_tweet = split_clitics(processed_tweet)
     return processed_tweet
     
@@ -46,7 +47,12 @@ def remove_urls(tweet):
 
 # need to fix, currently splitting abbrevs. 
 def split_punctuation(tweet):
-    return re.sub(r"([\)\(!?,\"]+)", r" \1", tweet)
+    return re.sub(r"([!?,\"]+)", r" \1", tweet)
+
+def split_parentheses(tweet):
+    processed_tweet = re.sub(r"([\(])", r" \1 ", tweet)
+    processed_tweet = re.sub(r"([\)])", r" \1 ", processed_tweet)
+    return processed_tweet
 
 def split_period(tweet):
     period_splits = re.findall(r'\w+\.', tweet)
@@ -153,7 +159,20 @@ if __name__ == "__main__":
 
     with open(sys.argv[1], 'rb') as twitter_csv:
         reader = csv.reader(twitter_csv)
-        for row in reader:
-            f.write("\n<A=%s>\n" % row[0])
-            f.write(tag(process(row[5]), tagger))
-    
+
+        row_count = len(list(reader))
+        twitter_csv.seek(0)
+
+        if (row_count >= 1600000):
+            starting_point_a = (int(sys.argv[2]) % 80) * 10000
+            starting_point_b = ((int(sys.argv[2]) % 80) * 10000) + 800000
+
+            for line_number, row in enumerate(reader):
+                if ((line_number >= starting_point_a and line_number < starting_point_a + 10000) or (line_number >= starting_point_b and line_number < starting_point_b + 10000)):
+                    print(line_number)
+                    f.write("\n<A=%s>\n" % row[0])
+                    f.write(tag(process(row[5]), tagger))
+        else:
+            for row in reader:
+                f.write("\n<A=%s>\n" % row[0])
+                f.write(tag(process(row[5]), tagger))
