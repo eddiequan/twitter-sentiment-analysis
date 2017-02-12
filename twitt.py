@@ -169,7 +169,6 @@ if __name__ == "__main__":
 
             for line_number, row in enumerate(reader):
                 if ((line_number >= starting_point_a and line_number < starting_point_a + 10000) or (line_number >= starting_point_b and line_number < starting_point_b + 10000)):
-                    print(line_number)
                     f.write("\n<A=%s>\n" % row[0])
                     f.write(tag(process(row[5]), tagger))
         else:
