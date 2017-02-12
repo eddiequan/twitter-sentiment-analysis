@@ -36,7 +36,7 @@ def feat4(content):
 
 # Past tense verbs
 def feat5(content):
-    return len(re.findall(r'/VBD', content))
+    return len(re.findall(r'/VBD|/VBN', content))
 
 # Future tense verbs
 def feat6(content):
@@ -101,7 +101,9 @@ def feat18(content):
 
 # avg. length of words
 def feat19(content):
-    non_punctuation_tokens = re.findall(r'(\w+)/[A-Z]+\b', content)
+    non_punctuation_tokens = re.findall(r'(\w+\W?)/[A-Z]+\b', content)
+    if (len(non_punctuation_tokens) == 0):
+        return 0
     num_chars = 0
     for token in non_punctuation_tokens:
         num_chars += len(token)
@@ -168,11 +170,11 @@ if __name__ == "__main__":
 
         for idx, content in enumerate(tagged_tweet_content):
             if not (num_data_points[polarity_tags[idx]] >= MAX_PER_CLASS):
-                output_file.write(format_features(content) + "," + polarity_tags[idx])
+                output_file.write(format_features(content) + "," + polarity_tags[idx] + "\n")
                 num_data_points[polarity_tags[idx]] += 1
     else:
         for idx, content in enumerate(tagged_tweet_content):
-            output_file.write(format_features(content) + "," + polarity_tags[idx])
+            output_file.write(format_features(content) + "," + polarity_tags[idx] + "\n")
 
     output_file.close()
 
